@@ -32,21 +32,7 @@ AS
     WHERE 
     Membership.Status = 'Active';
 
--- View 3: Books Stored at Each Branch
-CREATE VIEW BooksInBranches
-AS
-    SELECT
-        Branch.Name AS BranchName,
-        Branch.Location AS BranchLocation,
-        Book.Title AS BookTitle,
-        Book.Genre,
-        Book.Available_copies AS CopiesAvailable
-    FROM
-        Stored_at
-        JOIN Branch ON Stored_at.Branch_ID = Branch.ID
-        JOIN Book ON Stored_at.Book_ID = Book.ID;
-
--- View 4: Borrowed Books with Member Details
+-- View 3: Borrowed Books with Member Details
 CREATE VIEW BorrowedBooks
 AS
     SELECT
@@ -61,24 +47,8 @@ AS
         JOIN Member ON BorrowReturn.Member_ID = Member.Member_ID
         JOIN Book ON BorrowReturn.Book_ID = Book.ID;
 
--- View 5: Late Returns with Fine (Based on Report Table)
-CREATE VIEW LateReturns
-AS
-    SELECT
-        Report.Username AS AdminUsername,
-        Admin.Name AS AdminName,
-        Report.Book_ID,
-        Book.Title AS BookTitle,
-        Report.DelayFine AS Fine,
-        Report.Return_Date AS ReturnDate
-    FROM
-        Report
-        JOIN Admin ON Report.Username = Admin.Username
-        JOIN Book ON Report.Book_ID = Book.ID
-    WHERE 
-    Report.DelayFine > 0;
 
--- View 6: Popular Books by Category
+-- View 4: Popular Books by Category
 CREATE VIEW PopularBooksByCategory
 AS
     SELECT
@@ -93,7 +63,7 @@ AS
     WHERE 
     Category.Popularity_score > 80;
 
--- View 7: Admins Managing Each Branch
+-- View 5: Admins Managing Each Branch
 CREATE VIEW AdminsByBranch
 AS
     SELECT
@@ -106,45 +76,8 @@ AS
         Admin
         JOIN Branch ON Admin.Branch_ID = Branch.ID;
 
--- View 8: Books Authored by Specific Authors
-CREATE VIEW BooksByAuthor
-AS
-    SELECT
-        Author.Name AS AuthorName,
-        Book.Title AS BookTitle,
-        Book.Year_of_publication AS YearPublished,
-        Book.Genre,
-        Publisher.Name AS PublisherName
-    FROM
-        Book
-        JOIN Author ON Book.Author_ID = Author.ID
-        JOIN Publisher ON Book.Publisher_ID = Publisher.ID;
 
--- View 9: Branch Inventory Overview
-CREATE VIEW BranchInventory
-AS
-    SELECT
-        Branch.Name AS BranchName,
-        COUNT(Stored_at.Book_ID) AS TotalBooks,
-        COUNT(DISTINCT Book.Genre) AS UniqueGenres
-    FROM
-        Stored_at
-        JOIN Branch ON Stored_at.Branch_ID = Branch.ID
-        JOIN Book ON Stored_at.Book_ID = Book.ID
-    GROUP BY 
-    Branch.Name;
-
--- View 10: Members Without Borrowed Books
-CREATE VIEW MembersWithoutBorrowedBooks
-AS
-    SELECT
-        Member.Member_ID,
-        Member.Name AS MemberName,
-        Member.Email,
-        Membership.Type AS MembershipType
-    FROM
-        Member
-        LEFT JOIN BorrowReturn ON Member.Member_ID = BorrowReturn.Member_ID
-        LEFT JOIN Membership ON Member.Member_ID = Membership.Member_ID
-    WHERE 
-    BorrowReturn.Member_ID IS NULL;
+-- displaying a view
+use LibrarySysDB
+select *
+from BranchInventory
