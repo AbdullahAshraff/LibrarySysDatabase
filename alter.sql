@@ -1,0 +1,2 @@
+ALTER TABLE Message ADD 
+    Content VARCHAR(1000);
