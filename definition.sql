@@ -1,4 +1,6 @@
-use LibrarySysDB
+DROP DATABASE LibrarySystem
+CREATE DATABASE LibrarySystem
+use LibrarySystem
 
 -- Table: Publisher
 CREATE TABLE Publisher
@@ -15,7 +17,8 @@ CREATE TABLE Author
 (
     ID INT PRIMARY KEY,
     Name VARCHAR(255),
-    BOD DATE
+    BirthDate DATE,
+    Biography VARCHAR(MAX),
 );
 
 -- Table: Category
@@ -23,8 +26,7 @@ CREATE TABLE Category
 (
     ID INT PRIMARY KEY,
     Type VARCHAR(100),
-    Description TEXT,
-    Popularity_score INT
+    Description TEXT
 );
 
 -- Table: Book
@@ -35,23 +37,12 @@ CREATE TABLE Book
     Title VARCHAR(255),
     Year_of_publication INT,
     Edition VARCHAR(50),
-    Available_copies INT,
-    Genre VARCHAR(100),
     Publisher_ID INT,
     Category_ID INT,
     Author_ID INT,
     FOREIGN KEY (Publisher_ID) REFERENCES Publisher(ID),
     FOREIGN KEY (Category_ID) REFERENCES Category(ID),
     FOREIGN KEY (Author_ID) REFERENCES Author(ID)
-);
-
--- Table: Branch
-CREATE TABLE Branch
-(
-    ID INT PRIMARY KEY,
-    Location VARCHAR(255),
-    Name VARCHAR(255),
-    Phone VARCHAR(15)
 );
 
 -- Table: Admin
@@ -64,9 +55,17 @@ CREATE TABLE Admin
     Username VARCHAR(100) UNIQUE,
     Password VARCHAR(100),
     Hire_Date DATE,
-    Position VARCHAR(100),
-    Branch_ID INT,
-    FOREIGN KEY (Branch_ID) REFERENCES Branch(ID)
+    Position VARCHAR(100)
+);
+
+-- Table: Branch
+CREATE TABLE Branch
+(
+    ID INT PRIMARY KEY,
+    Location VARCHAR(255),
+    Name VARCHAR(255),
+    Phone VARCHAR(15),
+    AdminId INT FOREIGN KEY REFERENCES Admin(ID)
 );
 
 -- Table: Member
@@ -78,8 +77,7 @@ CREATE TABLE Member
     Phone VARCHAR(15),
     Username VARCHAR(100) UNIQUE,
     Password VARCHAR(100),
-    Sex CHAR(1),
-    Borrowing_History TEXT
+    Gender CHAR(1)
 );
 
 -- Table: Membership
@@ -87,34 +85,32 @@ CREATE TABLE Membership
 (
     Membership_ID INT PRIMARY KEY,
     Type VARCHAR(50),
-    Status VARCHAR(50),
-    Due_Date DATE,
-    Fee DECIMAL(10, 2),
-    Member_ID INT UNIQUE,
-    FOREIGN KEY (Member_ID) REFERENCES Member(Member_ID)
+    DurationDays INT,
+    Fee DECIMAL(10, 2)
 );
 
 -- Table: Message
 CREATE TABLE Message
 (
     ID INT PRIMARY KEY,
-    Sender INT,
-    Receiver INT,
+    MemberID INT,
+    AdminID INT,
+    IsMemberSender BIT,
+    TimeSent DATETIME,
     Content VARCHAR(1000),
-    FOREIGN KEY (Sender) REFERENCES Member(Member_ID),
-    FOREIGN KEY (Receiver) REFERENCES Member(Member_ID)
+    FOREIGN KEY (MemberID) REFERENCES Member(Member_ID),
+    FOREIGN KEY (AdminID) REFERENCES Admin(ID)
 );
 
 -- Table: Report
 CREATE TABLE Report
 (
     ID INT PRIMARY KEY,
-    Username VARCHAR(100),
-    Book_ID INT,
-    DelayFine DECIMAL(10, 2),
-    Return_Date DATE,
-    FOREIGN KEY (Username) REFERENCES Admin(Username),
-    FOREIGN KEY (Book_ID) REFERENCES Book(ID)
+    Type VARCHAR(50),
+    AdminID INT,
+    Content VARCHAR(MAX),
+    Created_Date DATE,
+    FOREIGN KEY (AdminID) REFERENCES Admin(ID)
 );
 
 -- Table: BorrowReturn
@@ -122,11 +118,13 @@ CREATE TABLE BorrowReturn
 (
     Member_ID INT,
     Book_ID INT,
+    Branch_ID INT,
     Issue_Date DATE,
     Return_Date DATE,
-    PRIMARY KEY (Member_ID, Book_ID),
+    PRIMARY KEY (Member_ID, Book_ID, Branch_ID, Issue_Date),
     FOREIGN KEY (Member_ID) REFERENCES Member(Member_ID),
-    FOREIGN KEY (Book_ID) REFERENCES Book(ID)
+    FOREIGN KEY (Book_ID) REFERENCES Book(ID),
+    FOREIGN KEY (Branch_ID) REFERENCES Branch(ID)
 );
 
 -- Table: Stored_at (Book → Branch)
@@ -134,6 +132,7 @@ CREATE TABLE Stored_at
 (
     Book_ID INT,
     Branch_ID INT,
+    Available_Copies INT,
     PRIMARY KEY (Book_ID, Branch_ID),
     FOREIGN KEY (Book_ID) REFERENCES Book(ID),
     FOREIGN KEY (Branch_ID) REFERENCES Branch(ID)
