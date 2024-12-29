@@ -77,7 +77,8 @@ CREATE TABLE Member
     Phone VARCHAR(15),
     Username VARCHAR(100) UNIQUE,
     Password VARCHAR(100),
-    Gender CHAR(1)
+    Gender CHAR(1),
+    Membership_ID INT FOREIGN KEY REFERENCES Membership(Membership_ID)
 );
 
 -- Table: Membership

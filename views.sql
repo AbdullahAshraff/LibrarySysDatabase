@@ -1,83 +1,159 @@
-use LibrarySysDB
+USE LibrarySystem;
 
--- View 1: Books with Authors and Publishers
-CREATE VIEW BooksWithAuthorsAndPublishers
+-- added
+CREATE VIEW Books_Data
 AS
     SELECT
-        Book.ID AS BookID,
-        Book.Title AS BookTitle,
-        Author.Name AS AuthorName,
-        Publisher.Name AS PublisherName,
-        Book.Year_of_publication AS YearPublished,
-        Book.Genre,
-        Book.Available_copies AS CopiesAvailable
+        B.Title AS Title,
+        a.Name AS Author,
+        p.Name AS Publisher,
+        c.Type AS Category
+    FROM Book B
+        JOIN Publisher p ON p.ID = B.Publisher_ID
+        JOIN Category c ON c.ID = B.Category_ID
+        JOIN Author a ON a.ID = B.Author_ID
+
+--------------------
+-- view 1
+-- added
+CREATE VIEW Books_By_Category
+AS
+    SELECT
+        C.Type AS Category,
+        COUNT(B.ID) AS Total_Books
     FROM
-        Book
-        JOIN Author ON Book.Author_ID = Author.ID
-        JOIN Publisher ON Book.Publisher_ID = Publisher.ID;
+        Book B
+        JOIN
+        Category C ON B.Category_ID = C.ID
+    GROUP BY 
+    C.Type;
 
--- View 2: Members with Active Memberships
-CREATE VIEW ActiveMembers
+
+--------------------
+-- view 2
+
+-- added
+CREATE VIEW Membership_Report
 AS
     SELECT
-        Member.Member_ID,
-        Member.Name AS MemberName,
-        Member.Email,
-        Membership.Type AS MembershipType,
-        Membership.Status,
-        Membership.Due_Date AS MembershipDueDate
+        Ms.Type AS Membership_Type,
+        COUNT(Mb.Member_ID) AS Total_Members
+    FROM
+        Membership Ms
+        LEFT JOIN
+        Member Mb ON Ms.Membership_ID = Mb.Membership_ID
+    GROUP BY 
+    Ms.Type;
+
+
+--------------------
+-- view 3
+-- added
+
+CREATE VIEW Borrowed_Books_By_Branch
+AS
+    SELECT
+        Br.Name AS Branch_Name,
+        COUNT(Bor.Book_ID) AS Borrowed_Books
+    FROM
+        BorrowReturn Bor
+        JOIN
+        Branch Br ON Bor.Branch_ID = Br.ID
+    GROUP BY 
+    Br.Name;
+
+
+--------------------
+-- view 4
+-- added
+
+CREATE VIEW Active_Admins
+AS
+    SELECT
+        A.Name AS Admin_Name,
+        A.Position,
+        B.Name AS Branch_Name
+    FROM
+        Admin A
+        LEFT JOIN
+        Branch B ON A.ID = B.AdminId;
+
+
+--------------------
+-- added
+
+CREATE VIEW Member_Gender_Distribution
+AS
+    SELECT
+        Gender,
+        COUNT(Member_ID) AS Total_Members
     FROM
         Member
-        JOIN Membership ON Member.Member_ID = Membership.Member_ID
-    WHERE 
-    Membership.Status = 'Active';
+    GROUP BY Gender;
 
--- View 3: Borrowed Books with Member Details
-CREATE VIEW BorrowedBooks
+
+
+--------------------
+-- view 
+-- added
+
+CREATE VIEW Books_Availability_By_Branch
 AS
     SELECT
-        BorrowReturn.Member_ID,
-        Member.Name AS MemberName,
-        BorrowReturn.Book_ID,
-        Book.Title AS BookTitle,
-        BorrowReturn.Issue_Date,
-        BorrowReturn.Return_Date
+        B.Title AS Book_Title,
+        Br.Name AS Branch_Name,
+        SA.Available_Copies
     FROM
-        BorrowReturn
-        JOIN Member ON BorrowReturn.Member_ID = Member.Member_ID
-        JOIN Book ON BorrowReturn.Book_ID = Book.ID;
+        Stored_at SA
+        JOIN Book B ON SA.Book_ID = B.ID
+        JOIN Branch Br ON SA.Branch_ID = Br.ID;
+
+SELECT *
+FROM Books_Availability_By_Branch
+ORDER BY Book_Title
 
 
--- View 4: Popular Books by Category
-CREATE VIEW PopularBooksByCategory
+
+--------------------
+-- added
+CREATE VIEW Admin_Messages
 AS
     SELECT
-        Category.Type AS CategoryType,
-        Category.Description AS CategoryDescription,
-        Book.Title AS BookTitle,
-        Book.Genre,
-        Category.Popularity_score AS PopularityScore
+        A.Name AS Admin_Name,
+        COUNT(M.ID) AS Total_Messages
     FROM
-        Book
-        JOIN Category ON Book.Category_ID = Category.ID
-    WHERE 
-    Category.Popularity_score > 80;
+        Message M
+        JOIN
+        Admin A ON M.AdminID = A.ID
+    GROUP BY 
+    A.Name;
 
--- View 5: Admins Managing Each Branch
-CREATE VIEW AdminsByBranch
+
+
+--------------------
+-- added
+
+CREATE VIEW Reports_By_Admin
 AS
     SELECT
-        Branch.Name AS BranchName,
-        Branch.Location AS BranchLocation,
-        Admin.Name AS AdminName,
-        Admin.Position,
-        Admin.Email AS AdminEmail
+        A.Name AS Admin_Name,
+        COUNT(R.ID) AS Total_Reports
     FROM
-        Admin
-        JOIN Branch ON Admin.Branch_ID = Branch.ID;
+        Report R
+        JOIN
+        Admin A ON R.AdminID = A.ID
+    GROUP BY 
+    A.Name;
+
+--------------------
+
+
+
+
+
 
 
 -- displaying a view
-use LibrarySysDB
+use LibrarySystem
 select *
-from BranchInventory
+from 

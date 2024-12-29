@@ -1,5 +1,5 @@
-ALTER TABLE Message ADD 
-    Content VARCHAR(1000);
+ALTER TABLE Member ADD 
+    Membership_ID INT FOREIGN KEY REFERENCES Membership(Membership_ID);
 
 ALTER TABLE Book DROP COLUMN genre;
 
