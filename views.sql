@@ -150,9 +150,6 @@ AS
 
 
 
-
-
-
 -- displaying a view
 use LibrarySystem
 select *

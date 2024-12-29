@@ -1,4 +1,3 @@
-DROP DATABASE LibrarySystem
 CREATE DATABASE LibrarySystem
 use LibrarySystem
 
