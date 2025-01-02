@@ -1,5 +1,7 @@
-CREATE DATABASE LibrarySystem
-use LibrarySystem
+
+use LibrarySystem2
+
+
 
 -- Table: Publisher
 CREATE TABLE Publisher
@@ -67,6 +69,17 @@ CREATE TABLE Branch
     AdminId INT FOREIGN KEY REFERENCES Admin(ID)
 );
 
+
+-- Table: Membership
+CREATE TABLE Membership
+(
+    Membership_ID INT PRIMARY KEY,
+    Type VARCHAR(50),
+    DurationDays INT,
+    Fee DECIMAL(10, 2)
+);
+
+
 -- Table: Member
 CREATE TABLE Member
 (
@@ -80,26 +93,17 @@ CREATE TABLE Member
     Membership_ID INT FOREIGN KEY REFERENCES Membership(Membership_ID)
 );
 
--- Table: Membership
-CREATE TABLE Membership
-(
-    Membership_ID INT PRIMARY KEY,
-    Type VARCHAR(50),
-    DurationDays INT,
-    Fee DECIMAL(10, 2)
-);
-
 -- Table: Message
 CREATE TABLE Message
 (
-    ID INT PRIMARY KEY,
     MemberID INT,
     AdminID INT,
     IsMemberSender BIT,
     TimeSent DATETIME,
     Content VARCHAR(1000),
     FOREIGN KEY (MemberID) REFERENCES Member(Member_ID),
-    FOREIGN KEY (AdminID) REFERENCES Admin(ID)
+    FOREIGN KEY (AdminID) REFERENCES Admin(ID),
+    PRIMARY KEY (MemberID, AdminID, TimeSent)
 );
 
 -- Table: Report

@@ -1,4 +1,4 @@
-USE LibrarySystem;
+USE LibrarySystem2;
 
 -- added
 CREATE VIEW Books_Data
@@ -42,8 +42,7 @@ AS
         Membership Ms
         LEFT JOIN
         Member Mb ON Ms.Membership_ID = Mb.Membership_ID
-    GROUP BY 
-    Ms.Type;
+    GROUP BY Ms.Type;
 
 
 --------------------
@@ -59,8 +58,7 @@ AS
         BorrowReturn Bor
         JOIN
         Branch Br ON Bor.Branch_ID = Br.ID
-    GROUP BY 
-    Br.Name;
+    GROUP BY Br.Name;
 
 
 --------------------
@@ -120,13 +118,12 @@ CREATE VIEW Admin_Messages
 AS
     SELECT
         A.Name AS Admin_Name,
-        COUNT(M.ID) AS Total_Messages
+        COUNT(*) AS Total_Messages
     FROM
         Message M
         JOIN
         Admin A ON M.AdminID = A.ID
-    GROUP BY 
-    A.Name;
+    GROUP BY A.Name;
 
 
 
@@ -151,6 +148,6 @@ AS
 
 
 -- displaying a view
-use LibrarySystem
+use LibrarySystem2
 select *
 from 
